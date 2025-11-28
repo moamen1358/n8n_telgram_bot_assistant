@@ -69,6 +69,7 @@
       "parameters": {
         "sendTo": "={{ $fromAI(\"emailAddress\") }}",
         "subject": "={{ $fromAI(\"subject\") }}",
+        "emailType": "html",
         "message": "={{ $fromAI(\"emailBody\") }}",
         "options": {
           "appendAttribution": false
