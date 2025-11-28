@@ -1,0 +1,692 @@
+{
+  "name": "Ultimate Personal Assistant",
+  "nodes": [
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $json.text }}",
+        "options": {
+          "systemMessage": "# Overview\nYou are the ultimate personal assistant. Your job is to send the user's query to the correct tool. You should never be writing emails, or creating even summaries, you just need to call the correct tool.\n\n## Tools\n- Think: Use this to think deeply or if you get stuck\n- emailAgent: Use this tool to take action in email\n- calendarAgent: Use this tool to take action in calendar\n- contactAgent: Use this tool to get, update, or add contacts\n- contentCreator: Use this tool to create blog posts\n- Tavily: Use this tool to search the web\n\n## Rules\n- Some actions require you to look up contact information first. For the following actions, you must get contact information and send that to the agent who needs it:\n  - sending emails\n  - drafting emails\n  - creating calendar event with attendee\n\n## Instructions\n1) Call the neccessary tools based on the user request\n2) Use the \"Think\" tool to verify you took the right steps. This tool should be called every time.\n\n\n## Examples\n1) \n- Input: send an email to nate herkelman asking him what time he wants to leave\n  - Action: Use contactAgent to get nate herkelman's email\n  - Action: Use emailAgent to send the email. You will pass the tool a query like \"send nate herkelman an email to ask what time he wants to leave. here is his email: [email address]\n- Output: The email has been sent to Nate Herkelman. Anything else I can help you with?\n\n\n## Final Reminders\nHere is the current date/time: {{ $now }}\n"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 1.7,
+      "position": [
+        3552,
+        592
+      ],
+      "id": "a0037006-cf1a-43ce-95d2-48fddd07eb7f",
+      "name": "Ultimate Assistant"
+    },
+    {
+      "parameters": {
+        "name": "emailAgent",
+        "description": "Call this tool for any email actions.",
+        "workflowId": {
+          "__rl": true,
+          "value": "ubXTKb18OgBHEqGO",
+          "mode": "list",
+          "cachedResultUrl": "/workflow/ubXTKb18OgBHEqGO",
+          "cachedResultName": "My_Email"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {},
+          "matchingColumns": [],
+          "schema": [],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
+      "typeVersion": 2,
+      "position": [
+        3440,
+        1136
+      ],
+      "id": "d8f18670-9d31-4b85-931c-a554c0927f74",
+      "name": "Email Agent"
+    },
+    {
+      "parameters": {
+        "name": "contactAgent",
+        "description": "Call this tool for any contact related actions.",
+        "workflowId": {
+          "__rl": true,
+          "value": "8eOA9rX3SND4tfv6",
+          "mode": "list",
+          "cachedResultUrl": "/workflow/8eOA9rX3SND4tfv6",
+          "cachedResultName": "My_Contact"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {},
+          "matchingColumns": [],
+          "schema": [],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
+      "typeVersion": 2,
+      "position": [
+        3712,
+        1136
+      ],
+      "id": "3a18a7d2-3921-49a6-b127-b7a3b85786f0",
+      "name": "Contact Agent"
+    },
+    {
+      "parameters": {
+        "name": "contentCreator",
+        "description": "Call this tool to create blog posts.",
+        "workflowId": {
+          "__rl": true,
+          "value": "1MVBeZBLV9rJ9y4D",
+          "mode": "list",
+          "cachedResultUrl": "/workflow/1MVBeZBLV9rJ9y4D",
+          "cachedResultName": "My_content_creater"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {},
+          "matchingColumns": [],
+          "schema": [],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
+      "typeVersion": 2,
+      "position": [
+        3856,
+        1136
+      ],
+      "id": "636b76a1-d3e8-4d70-b27e-99e0a8ceee9b",
+      "name": "Content Creator Agent"
+    },
+    {
+      "parameters": {
+        "toolDescription": "Use this tool to search the internet",
+        "method": "POST",
+        "url": "https://api.tavily.com/search",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "{\n    \"api_key\": \"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\",\n    \"query\": \"{searchTerm}\",\n    \"search_depth\": \"basic\",\n    \"include_answer\": true,\n    \"topic\": \"news\",\n    \"include_raw_content\": true,\n    \"max_results\": 3\n} ",
+        "placeholderDefinitions": {
+          "values": [
+            {
+              "name": "searchTerm",
+              "description": "What the user has requested to search the internet for",
+              "type": "string"
+            }
+          ]
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.toolHttpRequest",
+      "typeVersion": 1.1,
+      "position": [
+        4080,
+        880
+      ],
+      "id": "af641399-510a-4034-b7ff-421bba4217bc",
+      "name": "Tavily"
+    },
+    {
+      "parameters": {},
+      "type": "@n8n/n8n-nodes-langchain.toolCalculator",
+      "typeVersion": 1,
+      "position": [
+        4208,
+        880
+      ],
+      "id": "3644443d-fafb-47ba-abf4-0b7183ce754e",
+      "name": "Calculator"
+    },
+    {
+      "parameters": {
+        "name": "calendarAgent",
+        "description": "Call this tool for any calendar action.",
+        "workflowId": {
+          "__rl": true,
+          "value": "tNB4Wzahap9QfiL2",
+          "mode": "list",
+          "cachedResultUrl": "/workflow/tNB4Wzahap9QfiL2",
+          "cachedResultName": "My_Calendar"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {},
+          "matchingColumns": [],
+          "schema": [],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
+      "typeVersion": 2,
+      "position": [
+        3568,
+        1136
+      ],
+      "id": "31fe07ab-6677-4fdb-84e5-466e7a5aa8a9",
+      "name": "Calendar Agent"
+    },
+    {
+      "parameters": {
+        "content": "# Parent Agent\n\n",
+        "height": 260,
+        "width": 420,
+        "color": 5
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        3456,
+        496
+      ],
+      "typeVersion": 1,
+      "id": "60e05911-da20-4b43-94fe-5787ae617e8c",
+      "name": "Sticky Note"
+    },
+    {
+      "parameters": {
+        "content": "# Children\n## Sub-Workflows\n",
+        "height": 200,
+        "width": 800,
+        "color": 2
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        3200,
+        1088
+      ],
+      "typeVersion": 1,
+      "id": "69b09c24-7483-47ea-a9a6-8d99e04709d2",
+      "name": "Sticky Note1"
+    },
+    {
+      "parameters": {},
+      "type": "@n8n/n8n-nodes-langchain.toolThink",
+      "typeVersion": 1,
+      "position": [
+        4096,
+        1168
+      ],
+      "id": "4e0b6bdc-2579-4097-97c5-fdfa22aead45",
+      "name": "Think"
+    },
+    {
+      "parameters": {
+        "content": "# Think\n",
+        "height": 200,
+        "color": 4
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        4016,
+        1088
+      ],
+      "id": "1192c896-305c-404e-87db-0471398e03f4",
+      "name": "Sticky Note2"
+    },
+    {
+      "parameters": {
+        "updates": [
+          "message"
+        ],
+        "additionalFields": {}
+      },
+      "id": "da1bc17d-8335-460b-8069-d2321b382f51",
+      "name": "Telegram Trigger",
+      "type": "n8n-nodes-base.telegramTrigger",
+      "typeVersion": 1.1,
+      "position": [
+        2624,
+        592
+      ],
+      "webhookId": "99eab1a0-569d-4f0f-a49e-578a02abfe63",
+      "credentials": {
+        "telegramApi": {
+          "id": "2ttKlVtyRdzXsEb7",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "fe7ecc99-e1e8-4a5e-bdd6-6fce9757b234",
+              "name": "text",
+              "value": "={{ $json.message.text }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "a21a0542-cbeb-4a7b-9b94-13672bb12cb2",
+      "name": "Set 'Text'",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        3120,
+        608
+      ]
+    },
+    {
+      "parameters": {
+        "resource": "file",
+        "fileId": "={{ $json.message.voice.file_id }}",
+        "additionalFields": {}
+      },
+      "id": "9908d542-5558-43ed-8286-dabc51f8586d",
+      "name": "Download Voice File",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        3120,
+        448
+      ],
+      "webhookId": "c0b376b1-7b63-41b6-8063-0b3096b8333d",
+      "credentials": {
+        "telegramApi": {
+          "id": "2ttKlVtyRdzXsEb7",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.message.voice.file_id }}",
+                    "rightValue": "",
+                    "operator": {
+                      "type": "string",
+                      "operation": "exists",
+                      "singleValue": true
+                    },
+                    "id": "aa98479c-23fd-49d7-b198-df734d1eff76"
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Voice"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "8c844924-b2ed-48b0-935c-c66a8fd0c778",
+                    "leftValue": "={{ $json.message.text }}",
+                    "rightValue": "",
+                    "operator": {
+                      "type": "string",
+                      "operation": "exists",
+                      "singleValue": true
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Text"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "627eaad4-de02-4e35-9285-3dc9f7aca4be",
+      "name": "Switch",
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.2,
+      "position": [
+        2880,
+        592
+      ]
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $('Telegram Trigger').item.json.message.chat.id }}",
+        "text": "={{ $json.cleaned_text }}",
+        "additionalFields": {
+          "appendAttribution": false
+        }
+      },
+      "id": "9dace0ce-c228-47b6-9b43-76e2a64086f4",
+      "name": "Response",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        4192,
+        592
+      ],
+      "webhookId": "682ca5ab-d30c-4ea5-bb25-c2f26206e761",
+      "credentials": {
+        "telegramApi": {
+          "id": "2ttKlVtyRdzXsEb7",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sessionIdType": "customKey",
+        "sessionKey": "={{ $('Telegram Trigger').item.json.message.text }}"
+      },
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "typeVersion": 1.3,
+      "position": [
+        3040,
+        1136
+      ],
+      "id": "bdda58d5-5a57-4ac5-99a5-e64512e59ac2",
+      "name": "Simple Memory2"
+    },
+    {
+      "parameters": {
+        "content": "\n\n",
+        "height": 200,
+        "width": 608,
+        "color": 4
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        2560,
+        1088
+      ],
+      "id": "e34c934b-7eb7-41cf-aa90-a372df3c538b",
+      "name": "Sticky Note3"
+    },
+    {
+      "parameters": {
+        "jsCode": "// ULTRA-ROBUST MARKDOWN SANITIZER - Never gets stuck, handles ANY malformed input\n// Safe for \"not smart\" models that output broken markdown, nested tags, or garbage\n\ntry {\n  // Get input with multiple fallbacks and force to string\n  const rawInput = $json.output || $json.result || $json.text || $json.message?.text || \"\";\n  const text = typeof rawInput === 'string' ? rawInput : String(rawInput);\n  \n  // Return empty if invalid input\n  if (!text || text.trim().length === 0) {\n    return [{ json: { cleaned_text: \"\" } }];\n  }\n\n  // Layer 1: Remove code blocks (can contain anything, so delete completely)\n  let cleaned = text.replace(/```[\\s\\S]*?```/g, '').trim();\n  \n  // Layer 2: Remove inline code but keep content\n  cleaned = cleaned.replace(/`([^`]*)`/g, '$1');\n  \n  // Layer 3: Remove BALANCED markdown pairs (handles nesting via loop)\n  // Keeps looping until no more changes (handles **bold *nested* text**)\n  let prev = \"\";\n  while (prev !== cleaned) {\n    prev = cleaned;\n    cleaned = cleaned\n      .replace(/(\\*\\*|__)([^]*?)\\1/g, '$2')  // **bold** or __underline__\n      .replace(/(\\*|_)([^]*?)\\1/g, '$2')      // *italic* or _italic_\n      .replace(/~~([^]*?)~~/g, '$2');         // ~~strikethrough~~\n  }\n  \n  // Layer 4: Remove links but keep display text [text](url) → text\n  cleaned = cleaned.replace(/\\[([^\\]]+)\\]\\([^)]*\\)/g, '$1');\n  \n  // Layer 5: SAFETY NET - Remove any remaining markdown chars that could break Telegram\n  cleaned = cleaned\n    // Remove orphaned symbols (* _ ` ~)\n    .replace(/[\\*_`~]/g, '')\n    // Remove blockquote markers\n    .replace(/^>\\s*/gm, '')\n    // Remove headers\n    .replace(/^#{1,6}\\s*/gm, '')\n    // Remove table syntax\n    .replace(/^\\|.*\\|$/gm, '')\n    // Remove list bullets\n    .replace(/^\\s*[-+*]\\s/gm, '')\n    // Remove numbered lists\n    .replace(/^\\s*\\d+\\.\\s/gm, '')\n    // Clean extra whitespace\n    .replace(/\\s+/g, ' ')\n    .trim();\n  \n  // Final safety: Telegram max message length limit\n  const finalText = cleaned.substring(0, 4000);\n  \n  return [{ json: { cleaned_text: finalText } }];\n\n} catch (error) {\n  // ABSOLUTE SAFETY: If ANYTHING goes wrong, return empty string\n  // This guarantees the node NEVER gets stuck\n  console.warn(\"Sanitizer crashed, returning empty:\", error.message);\n  return [{ json: { cleaned_text: \"\" } }];\n}"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        3936,
+        592
+      ],
+      "id": "3b12bbde-28ba-41fb-a09c-032ebf35ab04",
+      "name": "Code in JavaScript"
+    },
+    {
+      "parameters": {
+        "model": "llama3.1:8b",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOllama",
+      "typeVersion": 1,
+      "position": [
+        2592,
+        1136
+      ],
+      "id": "df1b0190-ec98-4b63-9091-6fae331b9f96",
+      "name": "Ollama Chat Model",
+      "credentials": {
+        "ollamaApi": {
+          "id": "qvlYODAOoqkjP82V",
+          "name": "Ollama account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "model": "deepseek/deepseek-v3.1-terminus",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenRouter",
+      "typeVersion": 1,
+      "position": [
+        2736,
+        1136
+      ],
+      "id": "16738a77-16de-42c5-b013-d6dec762e649",
+      "name": "OpenRouter Chat Model",
+      "credentials": {
+        "openRouterApi": {
+          "id": "IoVgw9ckNzY87DUx",
+          "name": "chtues"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "model": "openai/gpt-oss-120b",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGroq",
+      "typeVersion": 1,
+      "position": [
+        2880,
+        1136
+      ],
+      "id": "8c673364-91c9-45d2-b254-4cae45e48175",
+      "name": "Groq Chat Model",
+      "credentials": {
+        "groqApi": {
+          "id": "QmVxOfEMvcrNKT7q",
+          "name": "Groq account"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Email Agent": {
+      "ai_tool": [
+        [
+          {
+            "node": "Ultimate Assistant",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Contact Agent": {
+      "ai_tool": [
+        [
+          {
+            "node": "Ultimate Assistant",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Content Creator Agent": {
+      "ai_tool": [
+        [
+          {
+            "node": "Ultimate Assistant",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Tavily": {
+      "ai_tool": [
+        [
+          {
+            "node": "Ultimate Assistant",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Calculator": {
+      "ai_tool": [
+        [
+          {
+            "node": "Ultimate Assistant",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Calendar Agent": {
+      "ai_tool": [
+        [
+          {
+            "node": "Ultimate Assistant",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Think": {
+      "ai_tool": [
+        [
+          {
+            "node": "Ultimate Assistant",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Telegram Trigger": {
+      "main": [
+        [
+          {
+            "node": "Switch",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Download Voice File": {
+      "main": [
+        [
+          {
+            "node": "Ultimate Assistant",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Switch": {
+      "main": [
+        [
+          {
+            "node": "Download Voice File",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Set 'Text'",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Set 'Text'": {
+      "main": [
+        [
+          {
+            "node": "Ultimate Assistant",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Ultimate Assistant": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Simple Memory2": {
+      "ai_memory": [
+        [
+          {
+            "node": "Ultimate Assistant",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript": {
+      "main": [
+        [
+          {
+            "node": "Response",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenRouter Chat Model": {
+      "ai_languageModel": [
+        []
+      ]
+    },
+    "Groq Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Ultimate Assistant",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Ollama Chat Model": {
+      "ai_languageModel": [
+        []
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "441ca10a-4077-474e-a202-ce35cdee7e2d",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "dbbfce6c6d9a659e11e15ca42582817ddb07576913825b9e22c6a9791cbc2a25"
+  },
+  "id": "1wqA4gxX2ALn9ZVo",
+  "tags": []
+}
